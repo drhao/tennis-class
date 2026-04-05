@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web Tennis Classic 網球教學完整指南</title>
+<style>
+  :root {
+    --green: #2e7d32;
+    --green-light: #4caf50;
+    --green-bg: #e8f5e9;
+    --orange: #ef6c00;
+    --orange-bg: #fff3e0;
+    --bg: #fafafa;
+    --card: #ffffff;
+    --text: #212121;
+    --text-secondary: #616161;
+    --border: #e0e0e0;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    --radius: 12px;
+    --sidebar-w: 280px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--green);
+    color: #fff;
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 24px; height: 56px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  }
+  .topbar .logo { font-size: 20px; font-weight: 700; white-space: nowrap; }
+  .topbar .logo span { color: #a5d6a7; font-weight: 400; font-size: 14px; margin-left: 8px; }
+  .hamburger {
+    display: none; background: none; border: none; color: #fff;
+    font-size: 24px; cursor: pointer; padding: 4px 8px;
+  }
+  .search-box {
+    margin-left: auto;
+    position: relative;
+  }
+  .search-box input {
+    width: 220px; padding: 6px 12px 6px 32px;
+    border: none; border-radius: 20px;
+    background: rgba(255,255,255,.2); color: #fff;
+    font-size: 14px; outline: none;
+    transition: background .2s;
+  }
+  .search-box input::placeholder { color: rgba(255,255,255,.6); }
+  .search-box input:focus { background: rgba(255,255,255,.35); width: 280px; }
+  .search-box::before {
+    content: "\1F50D"; position: absolute; left: 10px; top: 50%;
+    transform: translateY(-50%); font-size: 14px; pointer-events: none;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    position: fixed; top: 56px; left: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px 0;
+    z-index: 90;
+    transition: transform .3s;
+  }
+  .sidebar h3 {
+    padding: 0 20px; margin-bottom: 8px;
+    font-size: 12px; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--text-secondary);
+  }
+  .sidebar a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px;
+    text-decoration: none; color: var(--text);
+    font-size: 14px;
+    border-left: 3px solid transparent;
+    transition: all .15s;
+  }
+  .sidebar a:hover { background: var(--green-bg); color: var(--green); }
+  .sidebar a.active { border-left-color: var(--green); background: var(--green-bg); color: var(--green); font-weight: 600; }
+  .sidebar .icon { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
+
+  /* ── Main ── */
+  .main {
+    margin-left: var(--sidebar-w);
+    margin-top: 56px;
+    padding: 32px 40px 80px;
+    max-width: 900px;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(135deg, var(--green) 0%, #1b5e20 100%);
+    color: #fff;
+    padding: 48px 40px;
+    border-radius: var(--radius);
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "\1F3BE"; position: absolute; right: 30px; bottom: -10px;
+    font-size: 120px; opacity: .12;
+  }
+  .hero h1 { font-size: 32px; margin-bottom: 12px; }
+  .hero p { font-size: 15px; opacity: .9; max-width: 600px; line-height: 1.8; }
+  .hero .badge {
+    display: inline-block;
+    background: rgba(255,255,255,.2);
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 13px; margin-top: 16px;
+  }
+  .hero .badge a { color: #fff; text-decoration: underline; }
+
+  /* ── Section ── */
+  .section { margin-bottom: 48px; scroll-margin-top: 80px; }
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--green-light);
+  }
+  .section-header .num {
+    background: var(--green);
+    color: #fff;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; flex-shrink: 0;
+  }
+  .section-header h2 { font-size: 24px; color: var(--green); }
+
+  /* ── Card ── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+  }
+  .card h3 {
+    font-size: 20px; margin-bottom: 6px; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card .instructor {
+    font-size: 13px; color: var(--orange);
+    font-weight: 600; margin-bottom: 16px;
+  }
+  .card h4 {
+    font-size: 16px; margin: 20px 0 8px;
+    color: var(--green); font-weight: 700;
+    padding-left: 12px;
+    border-left: 3px solid var(--green-light);
+  }
+  .card ul { padding-left: 20px; margin: 8px 0; }
+  .card li { margin-bottom: 6px; font-size: 15px; }
+  .card li strong { color: var(--green); }
+  .card p { font-size: 15px; margin: 8px 0; }
+
+  .video-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #ff0000; color: #fff;
+    padding: 8px 16px; border-radius: 8px;
+    text-decoration: none; font-size: 13px; font-weight: 600;
+    margin-top: 12px; margin-right: 8px;
+    transition: opacity .2s;
+  }
+  .video-link:hover { opacity: .85; }
+  .video-link .yt-icon { font-size: 16px; }
+
+  /* ── Embedded video ── */
+  .video-embed {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 */
+    margin: 16px 0 8px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #000;
+  }
+  .video-embed iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: none;
+    border-radius: 10px;
+  }
+  .video-group { margin-top: 20px; }
+  .video-group-label {
+    font-size: 13px; color: var(--text-secondary);
+    margin-bottom: 4px; font-weight: 600;
+  }
+
+  .tip-box {
+    background: var(--orange-bg);
+    border-left: 4px solid var(--orange);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  .tip-box strong { color: var(--orange); }
+
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 14px;
+  }
+  th {
+    background: var(--green-bg); color: var(--green);
+    text-align: left; padding: 10px 14px;
+    font-weight: 600; white-space: nowrap;
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f5f5f5; }
+  td a { color: #ff0000; text-decoration: none; font-weight: 600; }
+  td a:hover { text-decoration: underline; }
+
+  /* ── Back to top ── */
+  .btt {
+    position: fixed; bottom: 24px; right: 24px;
+    width: 44px; height: 44px;
+    background: var(--green); color: #fff;
+    border: none; border-radius: 50%;
+    font-size: 20px; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    opacity: 0; transition: opacity .3s;
+    z-index: 99;
+  }
+  .btt.show { opacity: 1; }
+
+  /* ── Highlight on search ── */
+  mark { background: #fff176; padding: 0 2px; border-radius: 2px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 860px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,.15); }
+    .hamburger { display: block; }
+    .main { margin-left: 0; padding: 24px 16px 80px; }
+    .hero { padding: 32px 24px; }
+    .hero h1 { font-size: 24px; }
+    .card { padding: 20px; }
+    .search-box input { width: 140px; }
+    .search-box input:focus { width: 180px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<header class="topbar">
+  <button class="hamburger" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Menu">&#9776;</button>
+  <div class="logo">Web Tennis Classic<span>網球教學指南</span></div>
+  <div class="search-box">
+    <input id="searchInput" type="text" placeholder="搜尋技巧..." oninput="doSearch(this.value)">
+  </div>
+</header>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+  <h3>教學分類</h3>
+  <a href="#sec1"  class="nav-link active"><span class="icon">&#127934;</span>正手拍</a>
+  <a href="#sec2"  class="nav-link"><span class="icon">&#9996;&#65039;</span>雙手反拍</a>
+  <a href="#sec3"  class="nav-link"><span class="icon">&#128260;</span>反拍切球</a>
+  <a href="#sec4"  class="nav-link"><span class="icon">&#128256;</span>上旋球基礎</a>
+  <a href="#sec5"  class="nav-link"><span class="icon">&#8596;&#65039;</span>直線與斜線</a>
+  <a href="#sec6"  class="nav-link"><span class="icon">&#128165;</span>發球</a>
+  <a href="#sec7"  class="nav-link"><span class="icon">&#128170;</span>接發球</a>
+  <a href="#sec8"  class="nav-link"><span class="icon">&#127942;</span>截擊</a>
+  <a href="#sec9"  class="nav-link"><span class="icon">&#11088;</span>機會球處理</a>
+  <a href="#sec10" class="nav-link"><span class="icon">&#129504;</span>放鬆握拍</a>
+  <a href="#sec11" class="nav-link"><span class="icon">&#128099;</span>步法與軸足</a>
+  <a href="#sec12" class="nav-link"><span class="icon">&#127947;&#65039;</span>無球拍訓練</a>
+  <a href="#sec13" class="nav-link"><span class="icon">&#128214;</span>初學者入門</a>
+  <a href="#appendix" class="nav-link"><span class="icon">&#128218;</span>附錄索引</a>
+</nav>
+
+<!-- Main content -->
+<main class="main" id="content">
+
+<!-- Hero -->
+<div class="hero">
+  <h1>Web Tennis Classic 網球教學完整指南</h1>
+  <p>整理自 YouTube 頻道的網球教學影片，由前日本排名第一的尾崎里紗、全日本冠軍加地遙，以及奧脇莉音等職業選手親自示範與講解。所有內容均翻譯自日文逐字稿並整理為系統化的教學文章。</p>
+  <div class="badge">頻道：<a href="https://www.youtube.com/@WebTennisClassic/videos" target="_blank">@WebTennisClassic</a></div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Section 1: 正手拍 -->
+<!-- ================================================================== -->
+<div class="section" id="sec1">
+  <div class="section-header">
+    <div class="num">1</div>
+    <h2>正手拍（Forehand）</h2>
+  </div>
+
+  <div class="card">
+    <h3>尾崎里紗的正手拍完全解析</h3>
+    <div class="instructor">講師：尾崎里紗（前日本排名第一）</div>
+
+    <h4>握拍方式</h4>
+    <p>採用偏厚的握法。以拇指和食指之間的V字位置為基準，對準拍柄八角形左側的稜線，大約在中間位置持拍。</p>
+
+    <h4>準備姿勢</h4>
+    <ul>
+      <li>以正拍進攻為主的選手，準備姿勢時就已稍微偏向正拍側</li>
+      <li>手肘的角度稍微打開，讓整個姿勢一轉身就能立刻揮出正拍</li>
+    </ul>
+
+    <h4>引拍（Take-back）</h4>
+    <ul>
+      <li>採用帶有小幅圓弧的引拍方式，左手和球拍一起帶到肩膀後方</li>
+      <li><strong>關鍵：</strong>在對方球落地彈起時，球拍就已完成定位</li>
+      <li>左手盡量長時間持拍，一直帶到右肩後方才放開——身體和球拍能一體轉動，扭轉更深</li>
+      <li>放開左手時注意手腕角度、手肘角度和空間感——肘部大約能放進一顆小球的空間</li>
+      <li>手腕確實彎折不放鬆，保持這個形狀完成定位</li>
+    </ul>
+
+    <h4>揮拍與擊球</h4>
+    <ul>
+      <li>右側臀部和髖關節確實扭轉下沉蓄力</li>
+      <li>從臀部發力向前推出，手肘和握把端先行帶出——利用離心力和下半身力量</li>
+      <li><strong>注意：</strong>如果拍頭先跑出去，力量傳不到球上。務必讓肘部內側和握把端先行</li>
+      <li>身體軸心保持在右側，軸心停住所以前方才能加速</li>
+    </ul>
+
+    <h4>收拍（Follow-through）</h4>
+    <ul>
+      <li>擊球後手腕保持彎折狀態，手肘微彎</li>
+      <li>引拍時左肩在下巴下方，收拍時右肩來到下巴下方——完整的肩膀旋轉</li>
+      <li>確實從肩胛骨拉回左手來帶動球拍旋轉</li>
+    </ul>
+
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/Beae_RbaUKU" allowfullscreen loading="lazy"></iframe></div>
+      <div class="video-group-label">另見：慢動作合集</div>
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/9Fv-C3jjCyU" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>加地遙的正手拍教學</h3>
+    <div class="instructor">講師：加地遙（全日本選手權冠軍）</div>
+
+    <h4>引拍特點</h4>
+    <ul>
+      <li>不採用大幅旋轉引拍，而是用「拉回手肘」的方式，簡潔地在身體附近完成定位</li>
+      <li>球拍稍微在球的下方，以直線方式定位</li>
+      <li>一感覺到球要來正拍側，立刻帶動左肩一起轉動</li>
+    </ul>
+
+    <h4>擊球要點</h4>
+    <ul>
+      <li>利用右側髖關節、臀部和右腳的蹬地力量，配合扭轉回正來揮拍</li>
+      <li>擊球瞬間面朝前方直接打。左手在擊球同時用力往後拉</li>
+      <li>球拍不用刻意推送，靠右腳蹬力向前推進</li>
+    </ul>
+
+    <div class="tip-box">
+      <strong>最重要的一點：</strong>「開始和結束保持一致」——無論什麼球來，在球落地時就完成引拍定位，打完後的收拍位置也要一致。
+    </div>
+
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/VO04EGYf1xo" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>奧脇莉音的正手拍教學（左手持拍）</h3>
+    <div class="instructor">講師：奧脇莉音（W35肯亞雙打冠軍）</div>
+    <h4>獨特要點</h4>
+    <ul>
+      <li>非常厚的握法，手腕角度保持「彎折」狀態從頭到尾</li>
+      <li>收拍高度偏低，非持拍手用力往後拉回</li>
+      <li>頭部絕對不動，視線留在擊球側，打完才看球</li>
+    </ul>
+    <h4>左手選手的優勢</h4>
+    <ul>
+      <li>斜線高球打到對手反拍高點——網球中最難處理的球</li>
+      <li>瞄準網上約 1 公尺，用旋轉沉重的球讓對方在高點接球</li>
+    </ul>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/mi7oJbq55oo" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Section 2: 雙手反拍 -->
+<!-- ================================================================== -->
+<div class="section" id="sec2">
+  <div class="section-header">
+    <div class="num">2</div>
+    <h2>雙手反拍（Two-handed Backhand）</h2>
+  </div>
+
+  <div class="card">
+    <h3>尾崎里紗的雙手反拍完全解析</h3>
+    <div class="instructor">講師：尾崎里紗</div>
+    <h4>握拍</h4>
+    <ul>
+      <li>右手：發球握法（大陸式），拍柄細面朝上直握</li>
+      <li>左手：像左手打正拍的握法</li>
+    </ul>
+    <h4>引拍方式</h4>
+    <ul>
+      <li>從擊球形狀直接帶到後方，再原樣帶回——比旋轉引拍更快更準確</li>
+      <li>引拍完成時右肩在自己下巴下方——確實深入轉肩</li>
+      <li>放鬆狀態下開始揮拍時，拍頭會因重力自然下垂</li>
+    </ul>
+    <h4>揮拍</h4>
+    <ul>
+      <li>擊球前：左手彎曲、右手幾乎伸直</li>
+      <li>擊球後：左手伸直、右手稍微折起往右上方揮出</li>
+      <li>這樣能產生乾淨的旋轉，減少掛網</li>
+    </ul>
+    <div class="tip-box">
+      <strong>重要原則：</strong>反拍也一定要加旋轉——以網上一支球拍高度為目標。不管想多用力打，頭不能往前衝。
+    </div>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/JT9O70Jk6G8" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>加地遙的雙手反拍教學</h3>
+    <div class="instructor">講師：加地遙</div>
+    <h4>引拍</h4>
+    <ul>
+      <li>保持緊湊，左手肘貼近身體，稍微立起的狀態直接轉身</li>
+    </ul>
+    <h4>擊球</h4>
+    <ul>
+      <li>反拍打較直的球路——保持引拍角度直接送出</li>
+      <li>擊球時「正面紮實擊中」，往目標方向直線揮出</li>
+      <li>左手推送的同時右手折起收攏，腋下稍微夾緊</li>
+    </ul>
+    <h4>給初學者的建議</h4>
+    <ul>
+      <li>握拍轉換要快速穩定——每次練習都從正拍握法開始轉換</li>
+      <li>不要急著追求速度，先追求穩定的節奏和時機</li>
+      <li>無論球來哪裡，都能以相同姿勢擊球是最穩定的秘訣</li>
+    </ul>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/R6ETQ77YqIc" allowfullscreen loading="lazy"></iframe></div>
+      <div class="video-group-label">另見：反拍精彩集錦</div>
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/R6p7zaIVfSk" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Section 3: 反拍切球 -->
+<!-- ================================================================== -->
+<div class="section" id="sec3">
+  <div class="section-header">
+    <div class="num">3</div>
+    <h2>反拍切球（Backhand Slice）</h2>
+  </div>
+  <div class="card">
+    <h3>反拍切球的奧義</h3>
+    <div class="instructor">講師：尾崎里紗 指導加地遙</div>
+    <h4>1. 確實深轉</h4>
+    <ul>
+      <li>轉身要讓肩膀背面幾乎看得見的程度</li>
+      <li>持拍手伸直，左手彎曲——肩膀轉得更深</li>
+    </ul>
+    <h4>2. 建立「牆壁」</h4>
+    <ul>
+      <li>擊球時在身前建立一道牆壁的意識，軸心不要過早打開</li>
+      <li>先「正面紮實擊中」，擊中後再往側面帶出</li>
+    </ul>
+    <h4>3. 擊球位置與旋轉</h4>
+    <ul>
+      <li>觸球位置在拍面中間偏上方</li>
+      <li>正面擊中後，握把稍微往上提，拍面傾斜往外帶——產生斜向逆旋轉</li>
+    </ul>
+    <h4>4. 加速時機</h4>
+    <ul>
+      <li>不要「前段快、後段減速」，應該從引拍到擊球點逐漸加速</li>
+      <li>感覺從擊球點開始才真正加速，擊球後大膽往上揮</li>
+    </ul>
+    <h4>5. 重心轉移</h4>
+    <ul>
+      <li>擊球時重心完全移到右腳（前腳），揮完後迅速回位</li>
+    </ul>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/P1wT5VL9iZs" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Section 4: 上旋球 -->
+<!-- ================================================================== -->
+<div class="section" id="sec4">
+  <div class="section-header">
+    <div class="num">4</div>
+    <h2>上旋球基礎（Topspin）</h2>
+  </div>
+  <div class="card">
+    <h3>基本上旋球教學</h3>
+    <div class="instructor">講師：尾崎里紗</div>
+    <h4>大前提</h4>
+    <p>球拍必須設定在球的下方。從下方往上走才能自然產生旋轉。</p>
+    <h4>拍面設定</h4>
+    <ul>
+      <li>擊球面稍微朝下蓋住，蓋住的面稍微打開，從拍面最側邊的縱線開始往擊球點上升</li>
+      <li>從下方「摩擦」球的感覺</li>
+    </ul>
+    <h4>增加旋轉厚度</h4>
+    <ul>
+      <li>站距加寬，確實使用下半身</li>
+      <li>髖關節和臀部下沉蓄力</li>
+      <li>下半身從下往斜上方的力量，和球拍從下往上的動作，在擊球點完美結合</li>
+    </ul>
+    <h4>擊球後的拍頭動作</h4>
+    <ul>
+      <li>擊球後先往上再往下——拍頭移動幅度更大，旋轉量更多</li>
+    </ul>
+    <div class="tip-box">
+      <strong>常見錯誤：</strong>頭跟著球拍方向動。頭一動軸心偏移，加速減弱，擊球點偏移。所有場面都要確實固定頭部和軸心！
+    </div>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/VfoIHhsI3ec" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Section 5: 直線與斜線 -->
+<!-- ================================================================== -->
+<div class="section" id="sec5">
+  <div class="section-header">
+    <div class="num">5</div>
+    <h2>正手拍直線與斜線打法</h2>
+  </div>
+  <div class="card">
+    <h3>打法差異解說</h3>
+    <div class="instructor">講師：尾崎里紗</div>
+    <h4>核心觀念</h4>
+    <p>斜線和直線的打法差異非常微小。準備姿勢時要能打出任何方向——確實轉肩隱藏出球方向。</p>
+    <h4>拍面角度</h4>
+    <ul>
+      <li>握把端位置幾乎不變，只有拍頭稍微前移幾公分</li>
+      <li>斜線時拍頭稍微朝斜線角度傾斜，直線時拍面正對前方</li>
+      <li><strong>不需要大幅改變拍面</strong>，是非常細膩的差異</li>
+    </ul>
+    <h4>揮拍路線的「箭頭」意識</h4>
+    <ul>
+      <li>從引拍位置到目標方向，在腦中畫出一條箭頭線</li>
+      <li>手臂內側和肩膀沿著這條箭頭線揮出</li>
+      <li>「固定軸心」是基本中的基本</li>
+    </ul>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/D07_z1fNv5w" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Section 6: 發球 -->
+<!-- ================================================================== -->
+<div class="section" id="sec6">
+  <div class="section-header">
+    <div class="num">6</div>
+    <h2>發球（Serve）</h2>
+  </div>
+  <div class="card">
+    <h3>加地遙的必殺發球教學</h3>
+    <div class="instructor">講師：加地遙（全日本選手權冠軍）</div>
+    <h4>重點一：體重右移蓄力</h4>
+    <ul>
+      <li>利用全身的流暢動作產生力量，採用併腳式發球</li>
+      <li>站距稍寬，先將重心明確移到右腳，左腳甚至可以稍微離地</li>
+    </ul>
+    <h4>重點二：向上擊球</h4>
+    <ul>
+      <li>實際上應意識「向自己上方擊球」，不是打下去</li>
+      <li>打完之後身體自然前傾沒關係，但打的當下不能前傾</li>
+    </ul>
+    <h4>重點三：穩定的節奏</h4>
+    <ul>
+      <li>「1、2、3」的節奏，每次發球保持相同，在腦中默念</li>
+    </ul>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/83MS2EcOCZ0" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Section 7: 接發球 -->
+<!-- ================================================================== -->
+<div class="section" id="sec7">
+  <div class="section-header">
+    <div class="num">7</div>
+    <h2>接發球（Return of Serve）</h2>
+  </div>
+  <div class="card">
+    <h3>面對快速一發的三大要點</h3>
+    <div class="instructor">講師：尾崎里紗</div>
+    <h4>要點一：用「面」擊中而非「揮」</h4>
+    <ul>
+      <li>簡潔轉身，利用對方球的力量「擋住」擊球</li>
+      <li>練習時先在中間穩穩回球，不急著打角度</li>
+    </ul>
+    <h4>要點二：在球的延長線上設定腳步和球拍</h4>
+    <ul>
+      <li>第一步踏出時同時完成轉身和髖關節蓄力</li>
+      <li>確實把重心壓低，從低姿態穩穩接住</li>
+    </ul>
+    <h4>要點三：用身體擋住（Body Block）</h4>
+    <ul>
+      <li>擊球時核心肌群收緊，整個身體像一道牆擋住球</li>
+      <li>保持視線靠近擊球點，不要移開目光</li>
+    </ul>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/M-DpLePZsUs" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Section 8: 截擊 -->
+<!-- ================================================================== -->
+<div class="section" id="sec8">
+  <div class="section-header">
+    <div class="num">8</div>
+    <h2>截擊（Volley）</h2>
+  </div>
+  <div class="card">
+    <h3>勝利截擊徹底教學</h3>
+    <div class="instructor">講師：尾崎里紗 指導加地遙</div>
+    <h4>軸足</h4>
+    <ul>
+      <li>先用右腳完成定位和蓄力，蓄力不夠就會變成「手打」</li>
+    </ul>
+    <h4>觸球方式</h4>
+    <ul>
+      <li>不是「啪」一聲彈開球，而是讓球在拍面上「停留」久一點</li>
+      <li>從拍框下方稍微往上送出——「運球」的感覺</li>
+      <li>稍微往內收攏，可以產生旋轉，有風的日子球也比較容易落下</li>
+    </ul>
+    <h4>體重轉移</h4>
+    <ul>
+      <li>同時踏步和擊球——體重轉移的過程中擊球</li>
+      <li>中間高度基本上水平揮拍（Level Swing），同一高度運球送出</li>
+    </ul>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/DlO0sNjxwGY" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Section 9: 機會球 -->
+<!-- ================================================================== -->
+<div class="section" id="sec9">
+  <div class="section-header">
+    <div class="num">9</div>
+    <h2>機會球處理（Chance Ball）</h2>
+  </div>
+  <div class="card">
+    <h3>善用機會球的三大要點</h3>
+    <div class="instructor">講師：尾崎里紗</div>
+    <h4>重點一：平行的肩膀旋轉</h4>
+    <ul><li>球較高時跳起來，在空中做平行的肩膀旋轉，空中旋轉過程中就有擊球點</li></ul>
+    <h4>重點二：使用開放式站姿</h4>
+    <ul><li>採用半開放或完全開放式站姿，髖關節和臀部更容易蓄力，也更容易起跳</li></ul>
+    <h4>重點三：收拍是關鍵</h4>
+    <ul>
+      <li>不要用拍頭調整，用<strong>壓住手肘</strong>的方式控制距離</li>
+      <li>靠近網時壓肘時機提早；離網遠時壓肘較慢</li>
+    </ul>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/yFZt4IM9y-k" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Section 10: 放鬆握拍 -->
+<!-- ================================================================== -->
+<div class="section" id="sec10">
+  <div class="section-header">
+    <div class="num">10</div>
+    <h2>放鬆握拍與力量傳導</h2>
+  </div>
+  <div class="card">
+    <h3>放鬆握拍，力量就會增加！</h3>
+    <div class="instructor">講師：尾崎里紗</div>
+    <h4>1. 引拍時感受球拍重量</h4>
+    <ul><li>用「剛好撐住不會掉」的力度握拍，不要鬆到形狀崩壞</li></ul>
+    <h4>2. 意識放在下半身</h4>
+    <ul><li>想打出力量時，把注意力放在下半身——髖關節蓄力發力。上半身的緊繃自然減輕</li></ul>
+    <h4>3. 空揮檢查加速音</h4>
+    <ul><li>在身體前方右側應聽到「呼」的破風聲＝有加速</li>
+    <li>意識是「揮拍過程中自然有擊球點」，而非「去打那顆球」</li></ul>
+    <h4>4. 心理層面</h4>
+    <ul><li>保持「哪裡都能打」的心理餘裕，視野放寬看到整個球場</li></ul>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/B4HGP1OelAY" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Section 11: 步法 -->
+<!-- ================================================================== -->
+<div class="section" id="sec11">
+  <div class="section-header">
+    <div class="num">11</div>
+    <h2>步法與軸足時機</h2>
+  </div>
+  <div class="card">
+    <h3>右腳時機詳解</h3>
+    <div class="instructor">講師：尾崎里紗</div>
+    <h4>開放式站姿</h4>
+    <ul>
+      <li>球落地彈起時踏定右腳</li>
+      <li>確認自己最有力量的擊球點和右腳的距離關係</li>
+      <li>厚握法的人擊球點稍近，薄握法的人稍遠</li>
+    </ul>
+    <h4>踏入式站姿</h4>
+    <ul>
+      <li>比開放式更早踏定右腳，右腳定位後左腳踏出做體重轉移</li>
+      <li>注意不要用左腳調整距離，一定用右腳對準</li>
+      <li>比開放式稍微提早開始揮拍</li>
+    </ul>
+    <h4>練習方法</h4>
+    <p>球出練習，各種位置隨機出球，每球確實用軸足對準距離後擊球。腳踏實地做基礎練習非常重要。</p>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/8MPXjcjCrP8" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Section 12: 無球拍訓練 -->
+<!-- ================================================================== -->
+<div class="section" id="sec12">
+  <div class="section-header">
+    <div class="num">12</div>
+    <h2>無球拍基礎訓練</h2>
+  </div>
+  <div class="card">
+    <h3>藥球（Medicine Ball）訓練</h3>
+    <div class="instructor">講師：尾崎里紗</div>
+    <p>用 2 公斤的藥球練習正確的身體使用方式。網球依靠兩種力量：<strong>扭轉回正</strong>（身體旋轉）和<strong>從下往斜上蹬出</strong>（下半身）。</p>
+    <h4>基本動作</h4>
+    <ul>
+      <li>站姿比肩寬稍寬，上半身稍前傾，重心落在臀部</li>
+      <li>腳尖朝前不跟著轉向側面</li>
+      <li>扭轉時<strong>頭部固定不動</strong>——只有髖關節和肩膀旋轉</li>
+      <li>蓄力在髖關節，回正時保持頭部不動。節奏做 10 次</li>
+    </ul>
+    <h4>進階：短棒練習</h4>
+    <ul>
+      <li>和藥球一樣的扭轉回正動作</li>
+      <li><strong>肘部內側先出來</strong>，球拍最後才跟上——先肘後拍的順序</li>
+    </ul>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/JpsCyXfaLx4" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Section 13: 初學者 -->
+<!-- ================================================================== -->
+<div class="section" id="sec13">
+  <div class="section-header">
+    <div class="num">13</div>
+    <h2>初學者快速上手法</h2>
+  </div>
+  <div class="card">
+    <h3>L 型引拍法</h3>
+    <div class="instructor">講師：尾崎里紗</div>
+    <p>專為初學者設計的正手拍快速上手方法。</p>
+    <h4>L 型引拍的做法</h4>
+    <ul>
+      <li>球拍在後方，左手往側面伸出——形成字母「L」的形狀</li>
+      <li>更容易轉向側面、更容易扭轉身體</li>
+      <li>左手的位置就是擊球點的參考</li>
+    </ul>
+    <h4>練習步驟</h4>
+    <ul>
+      <li><strong>Step 1</strong>：L 型姿勢接球——用左手接住拋來的球</li>
+      <li><strong>Step 2</strong>：接球瞬間帶入球拍，左手改抓握把</li>
+      <li><strong>Step 3</strong>：L 型準備→球彈起→帶入球拍→擊球</li>
+      <li><strong>Step 4</strong>：保持 L 型在各方向移動中擊球</li>
+    </ul>
+    <div class="tip-box">
+      <strong>注意：</strong>不要過度打開（胸部朝前）——保持 L 型的側面姿勢。這比展開式準備更簡潔，距離感也更好掌握。
+    </div>
+    <div class="video-group">
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/LlbkP7CAXBE" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Appendix -->
+<!-- ================================================================== -->
+<div class="section" id="appendix">
+  <div class="section-header">
+    <div class="num">+</div>
+    <h2>附錄：影片索引</h2>
+  </div>
+
+  <div class="card">
+    <h3>宇野真彩系列（Tennis Classic 筆記本實踐）</h3>
+    <div class="table-wrap"><table>
+      <tr><th>主題</th><th>連結</th></tr>
+      <tr><td>#01 正手拍打不好</td><td><a href="https://www.youtube.com/watch?v=0c_bi31CrJs" target="_blank">觀看</a></td></tr>
+      <tr><td>#02 雙手反拍打不出直線球</td><td><a href="https://www.youtube.com/watch?v=iPDoSmDMkQA" target="_blank">觀看</a></td></tr>
+      <tr><td>#03 發球缺乏穩定感</td><td><a href="https://www.youtube.com/watch?v=WBB08W55F2g" target="_blank">觀看</a></td></tr>
+      <tr><td>#04 雙手反拍想要更多力量</td><td><a href="https://www.youtube.com/watch?v=orx0vfmj1SA" target="_blank">觀看</a></td></tr>
+      <tr><td>#05 想提升發球速度</td><td><a href="https://www.youtube.com/watch?v=b-6E85F5uiY" target="_blank">觀看</a></td></tr>
+      <tr><td>#06 高打點正拍不擅長</td><td><a href="https://www.youtube.com/watch?v=10dZbZoY-fY" target="_blank">觀看</a></td></tr>
+      <tr><td>#07 不失誤的正拍接發球</td><td><a href="https://www.youtube.com/watch?v=KuK92mEDSqY" target="_blank">觀看</a></td></tr>
+      <tr><td>#08 切球發球銳利度不夠</td><td><a href="https://www.youtube.com/watch?v=rg4PsgzRjqc" target="_blank">觀看</a></td></tr>
+      <tr><td>Vol.9 回不了切球</td><td><a href="https://www.youtube.com/watch?v=lqYZIbgBFGA" target="_blank">觀看</a></td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>早期教學示範影片（純示範）</h3>
+    <div class="table-wrap"><table>
+      <tr><th>技巧</th><th>連結</th></tr>
+      <tr><td colspan="2" style="background:var(--green-bg);font-weight:600;color:var(--green)">正手拍系列</td></tr>
+      <tr><td>正拍三方向基礎</td><td><a href="https://www.youtube.com/watch?v=QqqlfaC2wKc" target="_blank">觀看</a></td></tr>
+      <tr><td>正拍直線球</td><td><a href="https://www.youtube.com/watch?v=Tbr7YB2cjRU" target="_blank">觀看</a></td></tr>
+      <tr><td>繞步正拍直線</td><td><a href="https://www.youtube.com/watch?v=ZVHLiNMM8WI" target="_blank">觀看</a></td></tr>
+      <tr><td>繞步正拍逆斜線</td><td><a href="https://www.youtube.com/watch?v=rBDrxthDQug" target="_blank">觀看</a></td></tr>
+      <tr><td colspan="2" style="background:var(--green-bg);font-weight:600;color:var(--green)">雙手反拍系列</td></tr>
+      <tr><td>雙手反拍上旋基本型</td><td><a href="https://www.youtube.com/watch?v=Wshl5v65Ink" target="_blank">觀看</a></td></tr>
+      <tr><td>雙手反拍直線球</td><td><a href="https://www.youtube.com/watch?v=qt_LCyRtKZo" target="_blank">觀看</a></td></tr>
+      <tr><td>雙手反拍角度球</td><td><a href="https://www.youtube.com/watch?v=60xrfDy_LEk" target="_blank">觀看</a></td></tr>
+      <tr><td colspan="2" style="background:var(--green-bg);font-weight:600;color:var(--green)">單手反拍系列</td></tr>
+      <tr><td>單手反拍上旋基本型</td><td><a href="https://www.youtube.com/watch?v=UDQfKz-fkbw" target="_blank">觀看</a></td></tr>
+      <tr><td>單手反拍切球基本型</td><td><a href="https://www.youtube.com/watch?v=1iLC4XNd2TE" target="_blank">觀看</a></td></tr>
+      <tr><td>單手反拍直線球</td><td><a href="https://www.youtube.com/watch?v=cuoG0qQAsS4" target="_blank">觀看</a></td></tr>
+      <tr><td>單手反拍強烈斜線</td><td><a href="https://www.youtube.com/watch?v=fYKvzYHnwiA" target="_blank">觀看</a></td></tr>
+      <tr><td>單手反拍六種步法</td><td><a href="https://www.youtube.com/watch?v=p_KWjnaRa4c" target="_blank">觀看</a></td></tr>
+      <tr><td colspan="2" style="background:var(--green-bg);font-weight:600;color:var(--green)">發球系列</td></tr>
+      <tr><td>旋轉發球基本型</td><td><a href="https://www.youtube.com/watch?v=wt4Zq6wuEh0" target="_blank">觀看</a></td></tr>
+      <tr><td>高速旋轉發球</td><td><a href="https://www.youtube.com/watch?v=hWQp_-7Pf1I" target="_blank">觀看</a></td></tr>
+      <tr><td>外角發球</td><td><a href="https://www.youtube.com/watch?v=B7DlQKbE9j4" target="_blank">觀看</a></td></tr>
+      <tr><td>消滅雙誤：8 字揮拍</td><td><a href="https://www.youtube.com/watch?v=raMHeI3IFBc" target="_blank">觀看</a></td></tr>
+      <tr><td>消滅雙誤：旋轉發球</td><td><a href="https://www.youtube.com/watch?v=P0ovYyX7M_M" target="_blank">觀看</a></td></tr>
+      <tr><td>消滅雙誤：切球發球</td><td><a href="https://www.youtube.com/watch?v=2FYwsyKskHA" target="_blank">觀看</a></td></tr>
+      <tr><td colspan="2" style="background:var(--green-bg);font-weight:600;color:var(--green)">其他技巧</td></tr>
+      <tr><td>上旋球接近網</td><td><a href="https://www.youtube.com/watch?v=pt4QpYbVqpk" target="_blank">觀看</a></td></tr>
+      <tr><td>穿越球</td><td><a href="https://www.youtube.com/watch?v=AiUX8UQFseM" target="_blank">觀看</a></td></tr>
+      <tr><td>急速上升球</td><td><a href="https://www.youtube.com/watch?v=_WvjEtKQHzY" target="_blank">觀看</a></td></tr>
+      <tr><td>驅動截擊</td><td><a href="https://www.youtube.com/watch?v=x6v92b2XaRw" target="_blank">觀看</a></td></tr>
+      <tr><td>極致上旋：正手</td><td><a href="https://www.youtube.com/watch?v=UW_8Bmybtzg" target="_blank">觀看</a></td></tr>
+      <tr><td>極致上旋：雙手反拍</td><td><a href="https://www.youtube.com/watch?v=sR5Jjrl96Xo" target="_blank">觀看</a></td></tr>
+      <tr><td>極致上旋：單手反拍</td><td><a href="https://www.youtube.com/watch?v=L7XiGkZgtR4" target="_blank">觀看</a></td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>職業選手對打 / 球拍評測</h3>
+    <div class="table-wrap"><table>
+      <tr><th>主題</th><th>連結</th></tr>
+      <tr><td>職業對打慢動作（尾崎 vs 加地）</td><td><a href="https://www.youtube.com/watch?v=f7fQzltnx0Y" target="_blank">觀看</a></td></tr>
+      <tr><td>尾崎里紗實際練習紀錄</td><td><a href="https://www.youtube.com/watch?v=dRRfyh8peS0" target="_blank">觀看</a></td></tr>
+      <tr><td>職業選手回答觀眾問題</td><td><a href="https://www.youtube.com/watch?v=F8FlhKAlJ-I" target="_blank">觀看</a></td></tr>
+      <tr><td>HEAD BOOM 2026 新款解說</td><td><a href="https://www.youtube.com/watch?v=seHqO2O2uwM" target="_blank">觀看</a></td></tr>
+      <tr><td>SPEED MP/PRO/TOUR 比較</td><td><a href="https://www.youtube.com/watch?v=WTW9IDif8Zc" target="_blank">觀看</a></td></tr>
+      <tr><td>Dunlop 2026 FX 系列比較</td><td><a href="https://www.youtube.com/watch?v=VA0m6YxjYQY" target="_blank">觀看</a></td></tr>
+    </table></div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:40px 0 0;color:var(--text-secondary);font-size:13px;">
+  內容整理自 <a href="https://www.youtube.com/@WebTennisClassic/videos" target="_blank" style="color:var(--green)">@WebTennisClassic</a> YouTube 頻道<br>
+  由 AI 翻譯整理，僅供學習參考
+</div>
+
+</main>
+
+<!-- Back to top -->
+<button class="btt" id="btt" onclick="window.scrollTo({top:0})">&#8593;</button>
+
+<script>
+// ── Scroll spy ──
+const links = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('.section');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const id = e.target.id;
+      const active = document.querySelector(`.nav-link[href="#${id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-80px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// ── Close sidebar on mobile click ──
+links.forEach(l => l.addEventListener('click', () => {
+  document.querySelector('.sidebar').classList.remove('open');
+}));
+
+// ── Back to top ──
+window.addEventListener('scroll', () => {
+  document.getElementById('btt').classList.toggle('show', window.scrollY > 400);
+});
+
+// ── Search highlight ──
+function doSearch(q) {
+  // Remove old marks
+  document.querySelectorAll('mark').forEach(m => {
+    const parent = m.parentNode;
+    parent.replaceChild(document.createTextNode(m.textContent), m);
+    parent.normalize();
+  });
+  if (!q || q.length < 2) return;
+  const walk = (node) => {
+    if (node.nodeType === 3) {
+      const idx = node.textContent.toLowerCase().indexOf(q.toLowerCase());
+      if (idx >= 0) {
+        const span = document.createElement('mark');
+        const mid = node.splitText(idx);
+        mid.splitText(q.length);
+        span.textContent = mid.textContent;
+        mid.parentNode.replaceChild(span, mid);
+        span.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        return;
+      }
+    } else if (node.nodeType === 1 && !['SCRIPT','STYLE','MARK'].includes(node.tagName)) {
+      for (let c = node.firstChild; c; c = c.nextSibling) walk(c);
+    }
+  };
+  walk(document.getElementById('content'));
+}
+</script>
+
+</body>
+</html>
